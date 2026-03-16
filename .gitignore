@@ -1,1 +1,30 @@
-﻿.env
+﻿# Python
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+
+# 虚拟环境（绝对不能传）
+venv/
+env/
+ENV/
+
+# 环境变量（绝对不能传）
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# 项目数据（太大且敏感）
+data/
+chroma_db/
+*.pkl
+*.bin
+*.db
+
+# 日志
+*.log
