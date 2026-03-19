@@ -7,8 +7,8 @@ from app.services.rag_service import RAGService
 from app.core.config import settings
 from app.core.exceptions import GraphNotReadyException
 from app.api.v1.schemas import QueryRequest
-from fastapi import APIRouter, Request, Response, HTTPException
-
+from fastapi import APIRouter, Request, Response, HTTPException, Depends
+from fastapi.responses import StreamingResponse  # 单独导入
 router = APIRouter()
 
 @router.post("/analyze")
