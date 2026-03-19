@@ -1,5 +1,4 @@
-
-
+﻿
 ```markdown
 # GraphRAG Multi-Agent 竞品分析系统
 
@@ -36,13 +35,13 @@ flowchart TD
 
 ## 🛠️ 技术栈
 
-| 层级   | 技术                                                     |
-| ------ | -------------------------------------------------------- |
-| 框架   | FastAPI, Uvicorn, Gunicorn                               |
-| AI/ML  | LangGraph (自研状态机), LangChain, OpenAI Compatible API |
-| 数据库 | ChromaDB (向量), NetworkX (图谱), Redis (缓存)           |
-| 部署   | 阿里云 ECS, Ubuntu, Nginx, Systemd                       |
-| 监控   | 健康检查, 限流, 熔断降级, Git 状态检查                   |
+| 层级 | 技术 |
+|------|------|
+| 框架 | FastAPI, Uvicorn, Gunicorn |
+| AI/ML | LangGraph (自研状态机), LangChain, OpenAI Compatible API |
+| 数据库 | ChromaDB (向量), NetworkX (图谱), Redis (缓存) |
+| 部署 | 阿里云 ECS, Ubuntu, Nginx, Systemd |
+| 监控 | 健康检查, 限流, 熔断降级, Git 状态检查 |
 
 ## 📦 快速开始
 
@@ -152,4 +151,4 @@ scripts/              # 部署前检查脚本 (PowerShell)
 ## 📄 License
 
 MIT © 2026 haoyuehhh
-
+```
