@@ -55,3 +55,8 @@ class GraphBuilder:
                 matching_nodes.append(node_id)
         
         return matching_nodes
+
+def build_graph(documents):
+    """Build a knowledge graph from documents (wrapper for backward compatibility)."""
+    builder = GraphBuilder()
+    return builder.build_graph(documents)
