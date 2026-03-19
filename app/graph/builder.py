@@ -30,7 +30,6 @@ class GraphBuilder:
                 entity_id = str(uuid.uuid4())  # Entities can have unique IDs
                 G.add_node(
                     entity_id,
-                    type="entity",
                     name=entity["name"],
                     type=entity["type"],
                     description=entity.get("description", "")
