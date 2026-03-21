@@ -1,22 +1,12 @@
-# Notion 竞品分析
-
-## 定价
-- 免费版：限制 10 个访客
-- Pro 版：/人/月
-- 企业版：/人/月
+# Notion
 
 ## 核心功能
-- 块级编辑器（Block-based editor）
-- 关系型数据库（Relational databases）
-- 团队协作与权限管理
-- AI 助手（需额外付费）
+- 实时协作编辑
+- Database数据库
+- 多种视图（Table/Board/Calendar）
+- 第三方集成（Slack/GitHub）
 
-## 优势
-- 灵活性极高，模板丰富
-- 用户体验优秀
-- 跨平台支持
-
-## 劣势
-- 国内访问速度较慢
-- 移动端体验一般
-- 价格相对较高
+## 定价
+- Free: $0
+- Plus: $10/月
+- Business: $15/用户/月
