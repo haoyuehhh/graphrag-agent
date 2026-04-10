@@ -24,6 +24,16 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# 挂载前端静态文件
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+@app.get("/")
+async def root():
+    return FileResponse("frontend/index.html")
+
 # 添加 CORS 中间件
 app.add_middleware(
     CORSMiddleware,

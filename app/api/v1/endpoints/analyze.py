@@ -9,12 +9,14 @@ from app.core.exceptions import GraphNotReadyException
 from app.api.v1.schemas import QueryRequest
 from fastapi import APIRouter, Request, Response, HTTPException, Depends
 from fastapi.responses import StreamingResponse  # 单独导入
+from fastapi import Body
 router = APIRouter()
 
 @router.post("/analyze")
 async def analyze(
     request: Request,
-    query: str,
+    query: str = Body(...),  # 改成 Body(...)
+    top_k: int = Body(5),    # 如果需要 top_k 也加上
     rag_service: RAGService = Depends(get_rag_service)
 ):
     """
@@ -25,7 +27,6 @@ async def analyze(
         return JSONResponse(content=result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 @router.post("/analyze/stream")
 async def analyze_stream(
     request: QueryRequest,

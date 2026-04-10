@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import cytoscape from 'cytoscape';
 import type { GraphNode, GraphEdge, SelectedNode } from '../types';
 
@@ -11,224 +11,206 @@ interface GraphCanvasProps {
 const GraphCanvas: React.FC<GraphCanvasProps> = ({ nodes, edges, onNodeClick }) => {
   const cyRef = useRef<cytoscape.Core | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
+  const isInitialized = useRef(false);
 
+  // 只初始化一次
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || isInitialized.current) return;
+    isInitialized.current = true;
 
-    // 初始化Cytoscape
-    cyRef.current = cytoscape({
-      container: containerRef.current,
-      elements: {
-        nodes: nodes.map(node => ({
-          data: { id: node.id, label: node.label, ...node.data }
-        })),
-        edges: edges.map(edge => ({
-          data: { id: edge.id, source: edge.source, target: edge.target, ...edge.data }
-        }))
-      },
-      style: [
-        // 节点样式
-        {
-          selector: 'node',
-          style: {
-            'background-color': '#fff',
-            'label': 'data(label)',
-            'text-valign': 'center',
-            'text-halign': 'center',
-            'color': '#333',
-            'font-size': '12px',
-            'width': '60px',
-            'height': '60px',
-            'shape': 'ellipse',
-            'border-width': '2px',
-            'border-color': '#666',
-            'text-wrap': 'wrap',
-            'text-max-width': '50px'
+    try {
+      cyRef.current = cytoscape({
+        container: containerRef.current,
+        elements: [],
+        style: [
+          {
+            selector: 'node',
+            style: {
+              'background-color': '#fff',
+              'label': 'data(label)',
+              'text-valign': 'center',
+              'text-halign': 'center',
+              'color': '#333',
+              'font-size': '12px',
+              'width': '60px',
+              'height': '60px',
+              'shape': 'ellipse',
+              'border-width': '2px',
+              'border-color': '#666',
+              'text-wrap': 'wrap',
+              'text-max-width': '50px'
+            }
+          },
+          {
+            selector: 'node[type="company"]',
+            style: {
+              'background-color': '#3b82f6',
+              'shape': 'ellipse',
+              'width': '80px',
+              'height': '80px',
+              'font-size': '14px',
+              'font-weight': 'bold',
+              'color': 'white',
+              'border-color': '#1e40af'
+            }
+          },
+          {
+            selector: 'node[type="tech"]',
+            style: {
+              'background-color': '#10b981',
+              'shape': 'rectangle',
+              'width': '70px',
+              'height': '70px',
+              'font-size': '12px',
+              'color': 'white',
+              'border-color': '#059669'
+            }
+          },
+          {
+            selector: 'node[type="person"]',
+            style: {
+              'background-color': '#f97316',
+              'shape': 'diamond',
+              'width': '60px',
+              'height': '60px',
+              'font-size': '12px',
+              'color': 'white',
+              'border-color': '#ea580c'
+            }
+          },
+          {
+            selector: 'edge',
+            style: {
+              'width': '2px',
+              'line-color': '#999',
+              'target-arrow-color': '#999',
+              'target-arrow-shape': 'triangle',
+              'curve-style': 'bezier',
+              'label': 'data(relationship)',
+              'font-size': '10px',
+              'text-rotation': 'autorotate',
+              'text-margin-y': -10
+            }
+          },
+          {
+            selector: 'edge[type="invest"]',
+            style: {
+              'line-color': '#3b82f6',
+              'width': '3px',
+              'font-weight': 'bold'
+            }
+          },
+          {
+            selector: 'edge[type="tech_dep"]',
+            style: {
+              'line-color': '#10b981',
+              'width': '2px',
+              'line-style': 'dashed'
+            }
+          },
+          {
+            selector: 'edge[type="person_flow"]',
+            style: {
+              'line-color': '#f97316',
+              'width': '2px',
+              'target-arrow-shape': 'triangle',
+              'target-arrow-color': '#f97316'
+            }
           }
-        },
-        // 公司节点样式 - 蓝色圆形
-        {
-          selector: 'node[type="company"]',
-          style: {
-            'background-color': '#3b82f6',
-            'shape': 'ellipse',
-            'width': '80px',
-            'height': '80px',
-            'font-size': '14px',
-            'font-weight': 'bold',
-            'color': 'white',
-            'border-color': '#1e40af'
-          }
-        },
-        // 技术节点样式 - 绿色方形
-        {
-          selector: 'node[type="tech"]',
-          style: {
-            'background-color': '#10b981',
-            'shape': 'rectangle',
-            'width': '70px',
-            'height': '70px',
-            'font-size': '12px',
-            'color': 'white',
-            'border-color': '#059669'
-          }
-        },
-        // 人物节点样式 - 橙色菱形
-        {
-          selector: 'node[type="person"]',
-          style: {
-            'background-color': '#f97316',
-            'shape': 'diamond',
-            'width': '60px',
-            'height': '60px',
-            'font-size': '12px',
-            'color': 'white',
-            'border-color': '#ea580c'
-          }
-        },
-        // 边样式
-        {
-          selector: 'edge',
-          style: {
-            'width': '2px',
-            'line-color': '#999',
-            'target-arrow-color': '#999',
-            'target-arrow-shape': 'triangle',
-            'curve-style': 'bezier',
-            'label': 'data(relationship)',
-            'font-size': '10px',
-            'text-rotation': 'autorotate',
-            'text-margin-y': -10
+        ]
+      });
 
-          }
-        },
-        // 投资关系 - 实线
-        {
-          selector: 'edge[type="invest"]',
-          style: {
-            'line-color': '#3b82f6',
-            'width': '3px',
-            'font-weight': 'bold'
-          }
-        },
-        // 技术依赖 - 虚线
-        {
-          selector: 'edge[type="tech_dep"]',
-          style: {
-            'line-color': '#10b981',
-            'width': '2px',
-            'line-style': 'dashed'
-          }
-        },
-        // 人物流动 - 箭头
-        {
-          selector: 'edge[type="person_flow"]',
-          style: {
-            'line-color': '#f97316',
-            'width': '2px',
-            'target-arrow-shape': 'triangle',
-            'target-arrow-color': '#f97316'
-          }
-        }
-      ],
-      layout: {
-        name: 'cose',
-        idealEdgeLength: 100,
-        nodeOverlap: 20,
-        refresh: 20,
-        fit: true,
-        padding: 30,
-        randomize: false,
-        componentSpacing: 100,
-        nodeRepulsion: 400000,
-        edgeElasticity: 100,
-        nestingFactor: 5,
-        gravity: 80,
-        numIter: 1000,
-        initialTemp: 200,
-        coolingFactor: 0.95,
-        minTemp: 1.0
-      }
-    });
-
-    // 添加点击事件
-    if (cyRef.current) {
-      cyRef.current.on('tap', 'node', function(evt) {
-        const node = evt.target;
-        const nodeData = node.data();
-        setSelectedNode({
+      cyRef.current.on('tap', 'node', (evt) => {
+        const nodeData = evt.target.data();
+        if (!nodeData?.id) return;
+        
+        onNodeClick({
           id: nodeData.id,
-          label: nodeData.label,
-          type: nodeData.type as 'company' | 'tech' | 'person',
+          label: nodeData.label || '',
+          type: nodeData.type || 'company',
           data: {
-            name: nodeData.name,
-            description: nodeData.description
+            name: nodeData.name || '',
+            description: nodeData.description || ''
           }
         });
-        if (selectedNode) {
-  onNodeClick(selectedNode);
-}
       });
+
+    } catch (e) {
+      console.error('Cytoscape init error:', e);
     }
 
     return () => {
       if (cyRef.current) {
         cyRef.current.destroy();
+        cyRef.current = null;
+        isInitialized.current = false;
       }
     };
-  }, [nodes, edges, onNodeClick]);
+  }, []); // 空依赖，只运行一次
 
-  // 当节点数据变化时更新图
+  // 数据更新
   useEffect(() => {
-    if (cyRef.current) {
-      const cy = cyRef.current;
-      
-      // 更新节点
-      nodes.forEach(node => {
-        const cyNode = cy.getElementById(node.id);
-        if (cyNode.length > 0) {
-          cyNode.data({ ...node.data, label: node.label });
-        } else {
+    if (!cyRef.current || !nodes?.length) return;
+
+    const cy = cyRef.current;
+    
+    try {
+      cy.batch(() => {
+        cy.elements().remove();
+        
+        nodes.forEach(node => {
           cy.add({
             group: 'nodes',
-            data: { id: node.id, label: node.label, ...node.data }
+            data: { 
+              id: node.id, 
+              label: node.label || '',
+              type: node.type || 'unknown',
+              ...node.data 
+            }
           });
-        }
-      });
+        });
 
-      // 更新边
-      edges.forEach(edge => {
-        const cyEdge = cy.getElementById(edge.id);
-        if (cyEdge.length > 0) {
-          cyEdge.data({ ...edge.data, source: edge.source, target: edge.target });
-        } else {
+        edges.forEach(edge => {
           cy.add({
             group: 'edges',
-            data: { id: edge.id, source: edge.source, target: edge.target, ...edge.data }
+            data: { 
+              id: edge.id, 
+              source: edge.source, 
+              target: edge.target,
+              type: edge.type || '',
+              relationship: edge.type || '关联'
+            }
           });
-        }
+        });
       });
 
-      // 重新布局
-      cy.layout({
-        name: 'cose',
-        idealEdgeLength: 100,
-        nodeOverlap: 20,
-        refresh: 20,
-        fit: true,
-        padding: 30,
-        randomize: false,
-        componentSpacing: 100,
-        nodeRepulsion: 400000,
-        edgeElasticity: 100,
-        nestingFactor: 5,
-        gravity: 80,
-        numIter: 1000,
-        initialTemp: 200,
-        coolingFactor: 0.95,
-        minTemp: 1.0
-      }).run();
+      // 方案1：延迟布局，确保 DOM 就绪，使用 cyRef.current
+      setTimeout(() => {
+        if (!cyRef.current) return;  // 提前检查
+        
+        cyRef.current.layout({       // 用 cyRef.current 而不是 cy
+          name: 'cose',
+          idealEdgeLength: 100,
+          nodeOverlap: 20,
+          refresh: 20,
+          fit: true,
+          padding: 30,
+          randomize: false,
+          componentSpacing: 100,
+          nodeRepulsion: 400000,
+          edgeElasticity: 100,
+          nestingFactor: 5,
+          gravity: 80,
+          numIter: 1000,
+          initialTemp: 200,
+          coolingFactor: 0.95,
+          minTemp: 1.0,
+          animate: false
+        }).run();
+      }, 0);
+
+    } catch (e) {
+      console.error('Update error:', e);
     }
   }, [nodes, edges]);
 
